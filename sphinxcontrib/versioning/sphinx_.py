@@ -7,11 +7,12 @@ import os
 import sys
 
 from sphinx import application, locale
+
 try:
-    from sphinx import build_main
-except ImportError:
-    # Sphinx 1.7+ ImportError fix
     from sphinx.cmd.build import build_main
+except ImportError:
+    from sphinx import build_main
+
 from sphinx.builders.html import StandaloneHTMLBuilder
 from sphinx.config import Config as SphinxConfig
 from sphinx.errors import SphinxError
@@ -173,9 +174,9 @@ def setup(app):
 class ConfigInject(SphinxConfig):
     """Inject this extension info self.extensions. Append after user's extensions."""
 
-    def __init__(self, dirname, filename, overrides, tags):
+    def __init__(self, *args):
         """Constructor."""
-        super(ConfigInject, self).__init__(dirname, filename, overrides, tags)
+        super(ConfigInject, self).__init__(*args)
         self.extensions.append('sphinxcontrib.versioning.sphinx_')
 
 
@@ -209,7 +210,7 @@ def _build(argv, config, versions, current_name, is_root):
         argv += config.overflow
 
     # Build.
-    result = build_main(argv)
+    result = build_main(argv[1:])
     if result != 0:
         raise SphinxError
 
